@@ -35,7 +35,7 @@ def socket_bind():
                 s.bind((host, port))
                 s.listen(5)  # maximum number of connections in queue
             except socket.error as msg:
-                print("Retry " + tries + " failed: " + str(msg))  # TODO: replace {0}
+                print("Retry {0} failed: ".format(tries) + str(msg))  # TODO: replace {0} -> DONE
                 tries += 1
                 continue
             print("Successfully bound socket to port: " + str(port))
@@ -65,10 +65,11 @@ def send_commands(conn, address):
             sys.exit()
         if cmd == '':
             continue
-        conn.send(str.encode(cmd))  # conn.send(cmd.encode())
+        conn.send(str.encode(cmd))
         client_response = conn.recv(8192)
-        if str(client_response[:1]) == '/':
-            print(str(client_response[2:], "utf-8"))
+        if str(client_response[:1], "utf-8") == '/' \
+                or str(client_response[:1], "utf-8") == '#':  # valid response ('/') or error response ('#')
+            print(str(client_response[1:], "utf-8"))
         else:
             print("Connection has disconnected: " +
                   "[IP/Port] " + address[0] + "/" + str(address[1]))
@@ -80,4 +81,4 @@ def run(run_host, run_port):
     socket_accept()
 
 
-run('localhost', 9286)
+run('localhost', 9282)
